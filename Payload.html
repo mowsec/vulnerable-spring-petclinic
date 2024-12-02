@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Base64 Encoder</title>
+</head>
+<body>
+
+<h1>Base64 Encoder</h1>
+
+<textarea id="inputText" rows="10" cols="50"></textarea><br>
+<button onclick="encodeAndSend()">Encode and Send</button>
+
+<script>
+  function encodeAndSend() {
+    var inputText = document.getElementById("inputText").value;
+    var base64Encoded = btoa(inputText);
+
+    // Construct the URL with the base64 encoded data as a parameter
+    var url = "http://localhost:8081/test?name=test&cac=" + base64Encoded;
+
+    // Make the GET request
+    fetch(url)
+      .then(response => response.text())
+      .then(data => console.log(data))
+      .catch(error => console.error(error));
+  }
+</script>
+
+</body>
+</html>

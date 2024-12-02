@@ -31,11 +31,13 @@ services:
       CONTRAST__APPLICATION__NAME: "Email-Service"
       CONTRAST__ASSESS__ENABLE: "true"
       CONTRAST__PROTECT__ENABLE: "true"
+      CONTRAST__OBSERVE__ENABLE: "true"
     build:
       context: ./
       dockerfile: EmailService/Dockerfile
     ports:
       - 8081:8081
+      - 5005:5005
   log4shell-service:
     container_name: Log4ShellServer
     build:
@@ -50,6 +52,7 @@ services:
       CONTRAST__APPLICATION__NAME: "Web-Application"
       CONTRAST__ASSESS__ENABLE: "true"
       CONTRAST__PROTECT__ENABLE: "true"
+      CONTRAST__OBSERVE__ENABLE: "true"
     image: local/petclinic:latest
     container_name: petclinic-app
     build:
