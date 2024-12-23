@@ -12,15 +12,19 @@
 				pattern="%d %p %c{1.} [%t] ${spring:spring.application.name} %m%n" />
 		</Console>
 
+			<File name="File" fileName="/tmp/application.log" append="true">
+				<PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+			</File>
+
+
 	</Appenders>
 
-	<Loggers>
-		<!-- LOG everything at INFO level -->
-		<Root level="info">
-			<AppenderRef ref="Console" />
-		</Root>
 
-
-	</Loggers>
+	<loggers>
+		<root level="info">
+			<appender-ref ref="Console"/>
+			<appender-ref ref="File"/>
+		</root>
+	</loggers>
 
 </Configuration>

@@ -37,6 +37,7 @@ services:
       dockerfile: EmailService/Dockerfile
     ports:
       - 8081:8081
+      - 5005:5005
   log4shell-service:
     container_name: Log4ShellServer
     build:
