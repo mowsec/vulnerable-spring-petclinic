@@ -30,6 +30,8 @@
           class="btn btn-primary" type="submit" th:text="${text}">Add
           Pet</button>
       </div>
+      <a th:href="@{/owners/{ownerId}/pets/{petId}/uploadForm(ownerId=${owner.id}, petId=${pet.id})}">Upload File</a>
+      <img th:src="@{/owners/{ownerId}/pets/{petId}/image(ownerId=${owner.id}, petId=${pet.id})}" alt="Pet Image" style="max-width: 30vw;" />
     </div>
   </form>
 

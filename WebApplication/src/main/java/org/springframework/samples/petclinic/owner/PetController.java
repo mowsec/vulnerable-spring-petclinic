@@ -15,10 +15,19 @@
  */
 package org.springframework.samples.petclinic.owner;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.URLConnection;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
 import java.util.Collection;
 
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
@@ -31,6 +40,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import jakarta.validation.Valid;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 /**
  * @author Juergen Hoeller
@@ -147,6 +159,111 @@ class PetController {
 		owner.addPet(pet);
 		this.owners.save(owner);
 		return "redirect:/owners/{ownerId}";
+	}
+
+
+
+	@GetMapping("/pets/{petId}/uploadForm")
+	public String showUploadForm(@PathVariable int ownerId, @PathVariable int petId, Model model) {
+		// ... (add any necessary logic to prepare the model)
+		return "pets/uploadForm"; // Create this Thymeleaf template
+	}
+
+	@PostMapping("/pets/{petId}/upload")
+	public String handleFileUpload(@PathVariable int ownerId, @PathVariable int petId,
+								   @RequestParam("file") MultipartFile file,
+								   RedirectAttributes redirectAttributes) {
+		if (file.isEmpty()) {
+			// Handle empty file
+			redirectAttributes.addFlashAttribute("message", "Please select a file to upload.");
+			return "redirect:/owners/{ownerId}/pets/{petId}/uploadForm";
+		} else {
+			Owner owner = this.owners.findById(ownerId);
+			if (owner == null) {
+				throw new IllegalArgumentException("Owner ID not found: " + ownerId);
+			}
+			Pet pet = owner.getPet(petId);
+			if(pet.getPhotoPath()!=null ) {
+				System.out.println("PHTOTO SAVED : " + pet.getPhotoPath());
+			}
+			String fileName = file.getOriginalFilename();
+			Path tmpDir = Paths.get(System.getProperty("java.io.tmpdir"));
+			Path filePath = tmpDir.resolve(fileName);
+			System.out.println(filePath.toString());
+			pet.setPhotoPath(filePath.toString());
+
+			try {
+				Files.copy(
+					file.getInputStream(),
+					filePath,
+					StandardCopyOption.REPLACE_EXISTING);
+				this.owners.save(owner);
+			} catch (IOException e) {
+				// Handle the IOException
+				redirectAttributes.addFlashAttribute("message", "An error occurred while uploading the file.");
+				return "redirect:/owners/{ownerId}/pets/{petId}/uploadForm";
+			}
+
+		}
+
+
+		// Get the owner and pet objects (you might need to fetch them from the database)
+		//Owner owner = ownerService.findOwnerById(ownerId);
+		//	Pet pet = petService.findPetById(petId);
+
+		// Save the file (e.g., to disk or a cloud storage service)
+		// ... your file saving logic here ...
+
+		// Update the pet object with the file information (if needed)
+		// ...
+
+		// Redirect back to the pet page with a success message
+		redirectAttributes.addFlashAttribute("message", "File uploaded successfully!");
+		return "redirect:/owners/{ownerId}/pets/{petId}";
+
+
+	}
+
+	@GetMapping("/pets/getPhotoByPath")
+	public void showImageByPath(@RequestParam String photoPath, HttpServletResponse response) throws IOException {
+
+		Path path = Paths.get(photoPath);
+		byte[] imageBytes = Files.readAllBytes(path);
+
+		URLConnection connection = path.toFile().toURL().openConnection();
+		String mimeType = connection.getContentType();
+		response.setContentType(mimeType);
+		// Write the image bytes to the response output stream
+		try (OutputStream os = response.getOutputStream()) {
+			os.write(imageBytes);
+			os.flush();
+		}
+	}
+
+
+	@GetMapping("/pets/{petId}/image")
+	public void showImage(@PathVariable int ownerId, @PathVariable int petId, HttpServletResponse response) throws IOException {
+		// Get the owner and pet objects
+		Owner owner = this.owners.findById(ownerId);
+		Pet pet = owner.getPet(petId);
+
+		// Get the image file path associated with the pet
+		String imagePath = pet.getPhotoPath(); // Assuming you have a field in the Pet entity to store the image path
+		if (imagePath != null) {
+			// Load the image file
+			Path path = Paths.get(imagePath);
+			byte[] imageBytes = Files.readAllBytes(path);
+
+			URLConnection connection = path.toFile().toURL().openConnection();
+			String mimeType = connection.getContentType();
+			response.setContentType(mimeType);
+
+			// Write the image bytes to the response output stream
+			try (OutputStream os = response.getOutputStream()) {
+				os.write(imageBytes);
+				os.flush();
+			}
+		}
 	}
 
 }

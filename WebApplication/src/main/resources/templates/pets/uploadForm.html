@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Upload File</title>
+</head>
+<body>
+
+<h1>Upload File for Pet : <span th:text="${pet.name}"></span></h1>
+
+<form method="POST" enctype="multipart/form-data" th:action="@{/owners/{ownerId}/pets/{petId}/upload(ownerId=${owner.id}, petId=${pet.id})}">
+  <input type="file" name="file" />
+  <input type="submit" value="Upload" />
+</form>
+
+<div th:if="${message}">
+  <p th:text="${message}"></p>
+</div>
+
+</body>
+</html>
