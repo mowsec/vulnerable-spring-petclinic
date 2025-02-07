@@ -43,3 +43,6 @@ Unfortunately, there isn’t a logout button yet, so in order to change your use
 - No-role User: U “bob” P “password”
 
 
+
+## Run on bare metal 
+`sudo MYSQL_USER=$MYSQL_USER MYSQL_PASS=$MYSQL_PASS./buildandrun.sh`
