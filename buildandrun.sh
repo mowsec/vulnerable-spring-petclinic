@@ -5,12 +5,7 @@
 command -v "java" >/dev/null 2>&1 || { echo "Error: java is not installed."; exit 1; }
 command -v "mvn" >/dev/null 2>&1 || { echo "Error: mvn is not installed."; exit 1; }
 
-if [[ -n "$MYSQL_USER" ]] && [[ -n "$MYSQL_PASSWORD" ]]; then
-  echo "Both MYSQL_USER and MYSQL_PASSWORD are set."
-else
-  echo "Either MYSQL_USER or MYSQL_PASSWORD is not set."
-  exit 1
-fi
+
 
 
 # Download Contrast agent if not already downloaded
@@ -47,7 +42,7 @@ cd ..
 
 echo "Running Email Service"
 java -javaagent:"$AGENT_FILE" -Dcom.sun.jndi.ldap.object.trustURLCodebase=true -Dspring.profiles.active=mysql -jar EmailService/target/EmailService-1.0.0-SNAPSHOT.jar &> "$WORKDIR/emailservice.log" &
-sleep(30)
+sleep 30
 echo "Running WebApplication Service"
 java -javaagent:"$AGENT_FILE" -Dcom.sun.jndi.ldap.object.trustURLCodebase=true -Djava.io.tmpdir=/tmp/webapptmp -Dcontrast.agent.security_logger.path=$WORKDIR/.contrast-webapp/security.log -Dcontrast.application.name=adr-petclinic-webapp -Dspring.profiles.active=mysql -jar WebApplication/target/WebApplication-3.1.0-SNAPSHOT.jar &> "$WORKDIR/webapp.log" &
 
