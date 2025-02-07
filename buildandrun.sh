@@ -13,10 +13,6 @@ else
 fi
 
 
-# Pull the latest updates from the git repository
-echo "Pulling latest updates from github."
-git pull origin main &> /dev/null || { echo "Error: Unable to pull latest updates." >&2; exit 1; }
-
 # Download Contrast agent if not already downloaded
 WORKDIR=$(pwd) #Change this if something different is needed
 AGENT_VERSION=$(curl -sI "https://download.java.contrastsecurity.com/latest/" | grep -i location | sed -E 's/.*-(.*)\.jar/\1/' | tr -d '\r')
