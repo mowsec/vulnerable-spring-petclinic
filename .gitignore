@@ -18,3 +18,4 @@ _site/
 agent/contrast_security.yaml
 agent/*
 contrast_security.yaml
+*.log
