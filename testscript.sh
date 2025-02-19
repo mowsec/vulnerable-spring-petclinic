@@ -13,7 +13,7 @@ if [ -z "$2" ]; then
   jndiserver="log4shell-service"
 else
   # Argument provided, set host to the first argument
-  host="$2"
+  jndiserver="$2"
 fi
 
 
