@@ -41,7 +41,7 @@ cd WebApplication && mvn clean package -DskipTests=true || { echo "Error: Maven 
 cd ..
 
 echo "Running Email Service"
-nohup java -javaagent:"$AGENT_FILE" -Dcom.sun.jndi.ldap.object.trustURLCodebase=true -Dspring.profiles.active=mysql -jar EmailService/target/EmailService-1.0.0-SNAPSHOT.jar &> "$WORKDIR/emailservice.log" &
+nohup /opt/java/openjdk/bin/java -javaagent:"$AGENT_FILE" -Dcom.sun.jndi.ldap.object.trustURLCodebase=true -Dspring.profiles.active=mysql -jar EmailService/target/EmailService-1.0.0-SNAPSHOT.jar &> "$WORKDIR/emailservice.log" &
 sleep 30
 echo "Checking if Email Service is running"
 curl http://localhost:8081/actuator/health | grep UP && echo  "Email Service up and responding" || { echo "Error: Email Service is not running."; exit 1; }
