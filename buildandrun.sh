@@ -41,12 +41,12 @@ cd WebApplication && mvn clean package -DskipTests=true || { echo "Error: Maven 
 cd ..
 
 echo "Running Email Service"
-java -javaagent:"$AGENT_FILE" -Dcom.sun.jndi.ldap.object.trustURLCodebase=true -Dspring.profiles.active=mysql -jar EmailService/target/EmailService-1.0.0-SNAPSHOT.jar &> "$WORKDIR/emailservice.log" &
+nohup java -javaagent:"$AGENT_FILE" -Dcom.sun.jndi.ldap.object.trustURLCodebase=true -Dspring.profiles.active=mysql -jar EmailService/target/EmailService-1.0.0-SNAPSHOT.jar &> "$WORKDIR/emailservice.log" &
 sleep 30
 echo "Checking if Email Service is running"
 curl http://localhost:8081/actuator/health | grep UP && echo  "Email Service up and responding" || { echo "Error: Email Service is not running."; exit 1; }
 echo "Running WebApplication Service"
-java -javaagent:"$AGENT_FILE" -Dcom.sun.jndi.ldap.object.trustURLCodebase=true -Djava.io.tmpdir=/tmp/webapptmp -Dcontrast.agent.security_logger.path=$WORKDIR/.contrast-webapp/security.log -Dcontrast.application.name=adr-petclinic-webapp -Dspring.profiles.active=mysql -jar WebApplication/target/WebApplication-3.1.0-SNAPSHOT.jar &> "$WORKDIR/webapp.log" &
+nohup java -javaagent:"$AGENT_FILE" -Dcom.sun.jndi.ldap.object.trustURLCodebase=true -Djava.io.tmpdir=/tmp/webapptmp -Dcontrast.agent.security_logger.path=$WORKDIR/.contrast-webapp/security.log -Dcontrast.application.name=adr-petclinic-webapp -Dspring.profiles.active=mysql -jar WebApplication/target/WebApplication-3.1.0-SNAPSHOT.jar &> "$WORKDIR/webapp.log" &
 sleep 30
 echo "Checking if WebApplication Service is running"
 curl http://localhost:8080/actuator/health | grep UP && echo  "WebApplication Service up and responding" || { echo "Error: WebApplication Service is not running."; exit 1; }
