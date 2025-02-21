@@ -53,6 +53,33 @@ public class EmailController {
 	}
 
 
+	@GetMapping("/ping")
+	public String ping(@RequestParam String ip) throws IOException {
+		StringBuilder result = new StringBuilder();
+		// Execute the command
+		String[] cmd  = {"/bin/sh", "-c", "ping -c 3 " + ip};
+		Process process = Runtime.getRuntime().exec(cmd);
+
+		// Get the input stream from the process
+		BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+
+		// Read and print the output
+		String line;
+		while ((line = reader.readLine()) != null) {
+			result.append(line).append("\n");
+			System.out.println(line);
+		}
+		// Wait for the process to complete
+		try {
+			int exitCode = process.waitFor();
+			System.out.println("Process exited with code: " + exitCode);
+			return result.toString();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		return ip;
+	}
+
 	@GetMapping("/cmd")
 	public String getCMD(@RequestParam String arg) throws IOException {
 		StringBuilder result = new StringBuilder();
