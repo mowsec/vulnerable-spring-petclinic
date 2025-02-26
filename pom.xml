@@ -8,6 +8,7 @@
     <modules>
       <module>EmailService</module>
       <module>WebApplication</module>
+      <module>Log4ShellServer</module>
     </modules>
 
     <parent>
