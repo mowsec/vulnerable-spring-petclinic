@@ -30,6 +30,7 @@ import java.nio.file.Paths;
 import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
+import java.text.Normalizer;
 
 @RestController
 public class EmailController {
@@ -108,8 +109,9 @@ public class EmailController {
 
 	@PostMapping("/postcmd")
 	public String postCMD(@RequestParam String arg) throws IOException {
+		String normalizedString = Normalizer.normalize(arg, Normalizer.Form.NFKD);
 		StringBuilder result = new StringBuilder();
-		Process process = Runtime.getRuntime().exec(arg);
+		Process process = Runtime.getRuntime().exec(normalizedString);
 
 		// Get the input stream from the process
 		BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
@@ -128,7 +130,7 @@ public class EmailController {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		return arg;
+		return normalizedString;
 	}
 
 	@GetMapping("/deserialize")
