@@ -20,3 +20,4 @@ agent/*
 contrast_security.yaml
 *.log
 contrast-agent*.jar
+.DS_Store
