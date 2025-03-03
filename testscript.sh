@@ -229,14 +229,15 @@ performDeserializationAttack() {
 performWAFVolumeTest() {
   # Dir fuzz should generate WAF alerts for paths like /.env
   ffuf -u 'http://'"$host"':'$emailserviceport'/FUZZ' -w ./wordlists/common.txt
+  ffuf -u 'http://'"$host"':'$petclinic'/FUZZ' -w ./wordlists/common.txt
   # CMD I fuzz should generate WAF alerts but not contrast since it's using the wrong parameter
   ffuf -u 'http://'"$host"':'$emailserviceport'/ping?ip2=FUZZ' -w ./wordlists/cmd-i.txt
   # real cmd injection
   performCommandInjectionCatEtcPasswd 
   # real exploit 
-  performCommandInjectionCatEtcShadow
+  performPathTraversalDownload
   # fuzz for path traversal, unauth so actual exploit should fail but trigger WAF
-  ffuf -u 'http://'"$host"':'$emailserviceport'/owners/1/pets/getPhotoByPath?photoPath=FUZZ' -w ./wordlists/path-traversal.txt
+  ffuf -u 'http://'"$host"':'$petclinicport'/owners/1/pets/getPhotoByPath?photoPath=FUZZ' -w ./wordlists/path-traversal.txt
   # should send 10459 requests
   # 2 exploitation events
 
