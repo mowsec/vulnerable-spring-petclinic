@@ -16,3 +16,4 @@ _site/
 *.css
 !petclinic.css
 contrast_security.yaml
+contrast-agent*.jar

