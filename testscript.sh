@@ -228,16 +228,16 @@ performDeserializationAttack() {
 
 performWAFVolumeTest() {
   # Dir fuzz should generate WAF alerts for paths like /.env
-  ffuf -u 'http://'"$host"':'$emailserviceport'/FUZZ' -w ./wordlists/common.txt
-  ffuf -u 'http://'"$host"':'$petclinicport'/FUZZ' -w ./wordlists/common.txt
+  ffuf -u 'http://'"$host"':'$emailserviceport'/FUZZ' -w ./wordlists/common.txt -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36"
+  ffuf -u 'http://'"$host"':'$petclinicport'/FUZZ' -w ./wordlists/common.txt -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36"
   # CMD I fuzz should generate WAF alerts but not contrast since it's using the wrong parameter
-  ffuf -u 'http://'"$host"':'$emailserviceport'/ping?ip2=FUZZ' -w ./wordlists/cmd-i.txt
+  ffuf -u 'http://'"$host"':'$emailserviceport'/ping?ip2=FUZZ' -w ./wordlists/cmd-i.txt -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36"
   # real cmd injection
   performCommandInjectionCatEtcPasswd 
   # real exploit 
   performPathTraversalDownload
   # fuzz for path traversal, unauth so actual exploit should fail but trigger WAF
-  ffuf -u 'http://'"$host"':'$petclinicport'/owners/1/pets/getPhotoByPath?photoPath=FUZZ' -w ./wordlists/path-traversal.txt
+  ffuf -u 'http://'"$host"':'$petclinicport'/owners/1/pets/getPhotoByPath?photoPath=FUZZ' -w ./wordlists/path-traversal.txt -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36"
   # should send 10459 requests
   # 2 exploitation events
 
