@@ -34,7 +34,7 @@ jobs:
           fetch-depth: 0
           
       - name: Run Contrast AI SmartFix - Generate Fixes Action
-        uses: Contrast-Security-OSS/contrast-ai-smartfix-action@v1 # Replace with the latest version
+        uses: Contrast-Security-OSS/contrast-ai-smartfix-action@v1.0.5 # Replace with the latest version
         with:
           # Contrast Configuration
           contrast_host: ${{ vars.CONTRAST_HOST }} # The host name of your Contrast SaaS instance, e.g. 'app.contrastsecurity.com'
