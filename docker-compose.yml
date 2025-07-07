@@ -1,4 +1,4 @@
-version: "3.1"
+# Update Docker Compose
 
 services:
   db-1:
