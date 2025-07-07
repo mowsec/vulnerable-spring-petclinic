@@ -16,36 +16,34 @@ jobs:
   static_scanning:
     name: Contrast Scan: SAST
     runs-on: ubuntu-latest
+
+    steps:
     
-    - name: Git Checkout
-      uses: actions/checkout@v4.2.2
+      - name: Git Checkout
+        uses: actions/checkout@v4.2.2
+        
+      - name: Contrast Local Scan
+        # You may pin to the exact commit or the version.
+        # uses: Contrast-Security-OSS/contrast-local-scan-action@4de31ccf43ea98355f3933266aabea190f9a7d6d
+        uses: Contrast-Security-OSS/contrast-local-scan-action@v1.0.7
+        with:
+          # Url of your contrast instance, defaults to https://app.contrastsecurity.com/
+          apiUrl: ${{ vars.CONTRAST_HOST }}
+          # User name for authentication
+          apiUserName: ${{ vars.CONTRAST_USERNAME }}
+          # API Key from user settings
+          apiKey: ${{ secrets.CONTRAST_API_KEY
+          # Service Key from user settings
+          apiServiceKey: ${{ secrets.CONTRAST_API_SERVICE_KEY }}
+          # Organization ID from user settings
+          apiOrgId: ${{ vars.CONTRAST_ORG_ID }}
+          # To fail the step based on vulnerabilities being found at a severity or higher, 
+          # set the severity option to one of critical, high, medium, low, note.
+          severity: high
       
-    - name: Contrast Local Scan
-      # You may pin to the exact commit or the version.
-      # uses: Contrast-Security-OSS/contrast-local-scan-action@4de31ccf43ea98355f3933266aabea190f9a7d6d
-      uses: Contrast-Security-OSS/contrast-local-scan-action@v1.0.7
-      with:
-        # Url of your contrast instance, defaults to https://app.contrastsecurity.com/
-        apiUrl: ${{ vars.CONTRAST_HOST }}
-        # User name for authentication
-        apiUserName: ${{ vars.CONTRAST_USERNAME }}
-        # API Key from user settings
-        apiKey: ${{ secrets.CONTRAST_API_KEY
-        # Service Key from user settings
-        apiServiceKey: ${{ secrets.CONTRAST_API_SERVICE_KEY }}
-        # Organization ID from user settings
-        apiOrgId: ${{ vars.CONTRAST_ORG_ID }}
-        # To fail the step based on vulnerabilities being found at a severity or higher, 
-        # set the severity option to one of critical, high, medium, low, note.
-        severity: high
-    
-    # To list vulnerabilities in the GitHub Security Tab of the repo include GitHub upload-sarif action
-    # The value of `sarif_file` must be `results.sarif` 
-    - name: Upload SARIF file
-      uses: github/codeql-action/upload-sarif@v2
-      with:
-        sarif_file: results.sarif
-
-
-
-          
+      # To list vulnerabilities in the GitHub Security Tab of the repo include GitHub upload-sarif action
+      # The value of `sarif_file` must be `results.sarif` 
+      - name: Upload SARIF file
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: results.sarif
