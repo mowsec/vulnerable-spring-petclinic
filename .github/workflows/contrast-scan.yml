@@ -1,0 +1,43 @@
+on:
+  # Trigger analysis when pushing to main or an existing pull requests.  Also trigger on
+  # new pull requests
+  push:
+    branches:
+      - main
+  pull_request:
+      types: [opened, synchronize, reopened]
+name: Contrast Security Scan
+jobs:
+  static_scanning:
+    name: Contrast Scan: SAST
+    runs-on: ubuntu-latest
+    
+    - name: Git Checkout
+      uses: actions/checkout@v4.2.2
+      
+    - name: Contrast Local Scan
+      # You may pin to the exact commit or the version.
+      # uses: Contrast-Security-OSS/contrast-local-scan-action@4de31ccf43ea98355f3933266aabea190f9a7d6d
+      uses: Contrast-Security-OSS/contrast-local-scan-action@v1.0.7
+      with:
+        # Url of your contrast instance, defaults to https://app.contrastsecurity.com/
+        apiUrl: ${{ var.CONTRAST_HOST }}
+        # User name for authentication
+        apiUserName: ${{ var.CONTRAST_USERNAME }}
+        # API Key from user settings
+        apiKey: ${{ secrets.CONTRAST_API_KEY
+        # Service Key from user settings
+        apiServiceKey: ${{ secrets.CONTRAST_API_SERVICE_KEY }}
+        # Organization ID from user settings
+        apiOrgId: ${{ var.CONTRAST_ORG_ID }}
+    
+    # To list vulnerabilities in the GitHub Security Tab of the repo include GitHub upload-sarif action
+    # The value of `sarif_file` must be `results.sarif` 
+    - name: Upload SARIF file
+      uses: github/codeql-action/upload-sarif@v2
+      with:
+        sarif_file: results.sarif
+
+
+
+          
