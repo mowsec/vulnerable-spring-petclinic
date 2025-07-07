@@ -28,7 +28,9 @@ jobs:
         uses: Contrast-Security-OSS/contrast-local-scan-action@v1.0.7
         with:
           # Url of your contrast instance, defaults to https://app.contrastsecurity.com/
-          apiUrl: ${{ vars.CONTRAST_HOST }}
+          # TODO: The apiUrl cannot handle 'eval.contrastsecurity.com' - raise a PR
+          # apiUrl: ${{ vars.CONTRAST_HOST }}
+          apiUrl: https://eval.contrastsecurity.com/
           # User name for authentication
           apiUserName: ${{ vars.CONTRAST_USERNAME }}
           # API Key from user settings
