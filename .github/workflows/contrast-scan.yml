@@ -14,7 +14,7 @@ permissions:
   
 jobs:
   static_scanning:
-    name: Contrast Scan: SAST
+    name: Contrast Scan - SAST
     runs-on: ubuntu-latest
 
     steps:
