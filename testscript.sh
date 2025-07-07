@@ -29,6 +29,8 @@ while [[ $# -gt 0 ]]; do
 done
 
 
+# NEW CHANGE for PR 
+
 
 loginToPetclinic() {
   cookie=$(curl 'http://'"$host"':'$petclinicport'/login' \
