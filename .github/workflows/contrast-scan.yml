@@ -32,7 +32,7 @@ jobs:
           # User name for authentication
           apiUserName: ${{ vars.CONTRAST_USERNAME }}
           # API Key from user settings
-          apiKey: ${{ secrets.CONTRAST_API_KEY
+          apiKey: ${{ secrets.CONTRAST_API_KEY }}
           # Service Key from user settings
           apiServiceKey: ${{ secrets.CONTRAST_API_SERVICE_KEY }}
           # Organization ID from user settings
